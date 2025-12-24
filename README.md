@@ -17,6 +17,13 @@ This project demonstrates modern Infrastructure as Code (IaC) principles using *
 - `main.tf`: The core logic for AWS resources (e.g., S3 Buckets, IAM).
 - `.gitignore`: Ensures sensitive state files and secrets are never committed.
 
+## ⚙️ How to run
+1. Clone the repo: `git clone <your-repo-url>`
+2. Initialize: `terraform init`
+3. Preview changes: `terraform plan`
+4. Deploy: `terraform apply`
+
+
 ## 📝 Progression Log
 
 ### Day 1: Terraform Fundamentals
@@ -29,8 +36,11 @@ This project demonstrates modern Infrastructure as Code (IaC) principles using *
 - Implemented **Input Variables** to decouple configuration from code.
 - Deployed a globally unique **S3 Bucket** using dynamic variable inputs.
 
-## ⚙️ How to run
-1. Clone the repo: `git clone <your-repo-url>`
-2. Initialize: `terraform init`
-3. Preview changes: `terraform plan`
-4. Deploy: `terraform apply`
+
+### Day 3: Dynamic Infrastructure & Efficiency
+
+#### **Infrastructure-as-Code (Terraform)**
+On Day 3, I shifted from static configurations to **Dynamic Infrastructure**. The focus was on making code "aware" of its environment.
+- **Data Sources:** Implemented `data` blocks to query the AWS API for real-time information (Account IDs and Availability Zones). This removes hardcoded dependencies and makes the code portable across different AWS accounts.
+- **Outputs:** Defined explicit `output` values to surface critical resource information (like S3 Website Endpoints) directly to the CLI, facilitating automation and visibility.
+- **Implicit Dependencies:** Leveraged Terraform's dependency graph to ensure resources (like Bucket Website Configurations) are created in the correct logical order.
