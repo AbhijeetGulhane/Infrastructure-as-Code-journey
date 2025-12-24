@@ -1,9 +1,7 @@
-resource "aws_s3_bucket" "portfolio_bucket" {
-  bucket = var.bucket_name
+# This "searches" for your current AWS account info
+data "aws_caller_identity" "current" {}
 
-  tags = {
-    Name        = "My Portfolio Bucket"
-    Project     = var.project_name  # Reference the NAME of the variable, not the value
-    Environment = "Dev"
-  }
+# This searches for the availability zones in your region
+data "aws_availability_zones" "available" {
+  state = "available"
 }
