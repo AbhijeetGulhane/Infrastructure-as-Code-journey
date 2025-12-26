@@ -1,7 +1,9 @@
-# This "searches" for your current AWS account info
-data "aws_caller_identity" "current" {}
-
-# This searches for the availability zones in your region
-data "aws_availability_zones" "available" {
-  state = "available"
+module "portfolio_site" {
+  source      = "./modules/s3-website" # Path to your blueprint
+  bucket_name = "abhijeet-portfolio-bucket-2025"
+  
+  tags = {
+    Project = "Infrastructure-as-Code-journey"
+    Day     = "5"
+  }
 }

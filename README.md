@@ -49,3 +49,9 @@ On Day 3, I shifted from static configurations to **Dynamic Infrastructure**. Th
 - **Remote Backend:** Successfully migrated local state to AWS S3 for durability.
 - **State Locking:** Implemented native S3 lockfile support to prevent concurrent execution conflicts.
 - **Bootstrap Process:** Navigated the "Chicken-and-Egg" problem using a two-stage initialization.
+
+
+#### Day 5: Modularization & State Refactoring
+- **Modules:** Refactored S3 Website logic into a reusable child module located in `./modules/s3-website`.
+- **State Management:** Mastered `terraform state list` and `terraform state mv` to ensure zero-downtime refactoring.
+- **Algorithms:** Implemented an iterative $O(n)$ time and $O(1)$ space solution for Reversing a Linked List.
