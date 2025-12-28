@@ -24,7 +24,7 @@ This project demonstrates modern Infrastructure as Code (IaC) principles using *
 4. Deploy: `terraform apply`
 
 
-## 📝 Progression Log
+# 📝 Progression Log
 
 ### Day 1: Terraform Fundamentals
 - Mastered the Core Workflow: `init`, `plan`, `apply`, `destroy`.
@@ -55,3 +55,17 @@ On Day 3, I shifted from static configurations to **Dynamic Infrastructure**. Th
 - **Modules:** Refactored S3 Website logic into a reusable child module located in `./modules/s3-website`.
 - **State Management:** Mastered `terraform state list` and `terraform state mv` to ensure zero-downtime refactoring.
 - **Algorithms:** Implemented an iterative $O(n)$ time and $O(1)$ space solution for Reversing a Linked List.
+
+## Project 1: Multi-Environment Portfolio Engine
+
+### Description
+A production-grade Terraform framework that deploys isolated static websites across multiple environments using a single codebase.
+
+### Technical Stack
+- **Terraform Workspaces:** Environment isolation for `dev` and `prod`.
+- **Remote State:** Managed via S3 with DynamoDB locking.
+- **Custom Modules:** Reusable S3 website component with automated policy injection.
+
+### Results
+- **Dev URL:** http://abhijeet-portfolio-dev-2025.s3-website-us-east-1.amazonaws.com
+- **Prod URL:** http://abhijeet-portfolio-prod-2025.s3-website-us-east-1.amazonaws.com
