@@ -115,3 +115,18 @@ This module automates the deployment of a secure networking environment, featuri
 - **Network Isolation:** Built a multi-tier VPC with strictly private subnets for enhanced security.
 - **Cost Engineering:** Replaced the standard AWS NAT Gateway (~$32/mo) with a custom-configured **NAT Instance** using Amazon Linux 2023, keeping the project within the **AWS Free Tier**.
 - **IaC Best Practices:** Implemented automated formatting and rigorous `terraform validate` workflows to handle complex variable scoping.
+
+
+## Phase 3 & 4: High Availability & Elasticity 📈
+
+In this stage, I transitioned from a static network to an automated, self-healing fleet.
+
+### 🏗 Architecture
+- **Application Load Balancer (ALB):** Acts as the entry point for all HTTP traffic, distributing load across multiple availability zones.
+- **Auto Scaling Group (ASG):** Manages a fleet of EC2 instances in private subnets. It ensures a minimum of 2 instances are always healthy.
+- **Security Group Chaining:** Implemented a "Least Privilege" model where web servers only accept traffic if it originates from the ALB's security group.
+
+### 🧠 SRE Skills Mastered
+- **Self-Healing:** Configured ASG health checks to automatically replace failed instances.
+- **Private Fleet Management:** Successfully routed traffic to instances with no public IPs using the ALB as a bridge.
+- **Infrastructure Testing:** Created a bash-based health check script to verify load balancer responsiveness.

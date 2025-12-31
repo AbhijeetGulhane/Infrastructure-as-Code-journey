@@ -4,26 +4,25 @@ resource "aws_vpc" "main" {
   tags                 = { Name = "${var.project_name}-vpc" }
 }
 
-# NAT Instance Security Group
-resource "aws_security_group" "nat_sg" {
-  name   = "${var.project_name}-nat-sg"
+resource "aws_subnet" "public" {
+  for_each                = var.public_subnets
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = each.value.cidr
+  availability_zone       = each.value.az
+  map_public_ip_on_launch = true
+  tags                    = { Name = "${var.project_name}-${each.key}" }
+}
+
+resource "aws_subnet" "private" {
+  for_each          = var.private_subnets
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = each.value.cidr
+  availability_zone = each.value.az
+  tags              = { Name = "${var.project_name}-${each.key}" }
+}
+
+# Internet Gateway for Public Traffic
+resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
-
-  ingress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    # FIX: Changed to plural 'cidr_blocks' and added brackets []
-    cidr_blocks = [var.vpc_cidr]
-  }
-
-  egress {
-    from_port = 0
-    to_port   = 0
-    protocol  = "-1"
-    # FIX: Changed to plural 'cidr_blocks' and added brackets []
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = { Name = "${var.project_name}-nat-sg" }
+  tags   = { Name = "${var.project_name}-igw" }
 }
