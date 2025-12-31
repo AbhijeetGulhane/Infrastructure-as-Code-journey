@@ -4,39 +4,26 @@ resource "aws_vpc" "main" {
   tags                 = { Name = "${var.project_name}-vpc" }
 }
 
-resource "aws_internet_gateway" "main" {
-  vpc_id = aws_vpc.main.id
-  tags   = { Name = "${var.project_name}-igw" }
-}
-
-# The Loop: This creates a subnet for every entry in var.public_subnets
-resource "aws_subnet" "public" {
-  for_each = var.public_subnets
-
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = each.value.cidr
-  availability_zone = each.value.az
-
-  tags = {
-    Name = "${var.project_name}-${each.key}"
-  }
-}
-
-resource "aws_route_table" "public" {
+# NAT Instance Security Group
+resource "aws_security_group" "nat_sg" {
+  name   = "${var.project_name}-nat-sg"
   vpc_id = aws_vpc.main.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.main.id
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    # FIX: Changed to plural 'cidr_blocks' and added brackets []
+    cidr_blocks = [var.vpc_cidr] 
   }
 
-  tags = { Name = "${var.project_name}-public-rt" }
-}
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    # FIX: Changed to plural 'cidr_blocks' and added brackets []
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-# Association Loop: Connects the Route Table to EVERY subnet we just created
-resource "aws_route_table_association" "public" {
-  for_each = aws_subnet.public
-
-  subnet_id      = each.value.id
-  route_table_id = aws_route_table.public.id
+  tags = { Name = "${var.project_name}-nat-sg" }
 }
