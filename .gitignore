@@ -1,11 +1,15 @@
-# Local .terraform folder
+cat <<EOF > .gitignore
+# Terraform local state and plugins
 .terraform/
-
-# Local state files
 *.tfstate
 *.tfstate.backup
-*.tfstate.lock.info
+.terraform.lock.hcl
 
-# Variable files containing secrets
+# Sensitive variables (if you ever use them)
 *.tfvars
 *.tfvars.json
+
+# Operating system files
+.DS_Store
+Thumbs.db
+EOF
