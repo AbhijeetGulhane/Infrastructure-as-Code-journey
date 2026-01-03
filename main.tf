@@ -44,6 +44,7 @@ resource "aws_security_group" "web_sg" {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Temporary wide-open test
     security_groups = [aws_security_group.alb_sg.id]
   }
 
@@ -87,18 +88,20 @@ resource "aws_lb_listener" "http" {
 
 # Auto Scaling
 resource "aws_launch_template" "web" {
-  name_prefix   = "web-tpl-"
-  image_id      = data.aws_ami.amazon_linux_2023.id  # <--- Changed this
+name_prefix   = "web-tpl-"
+  image_id      = data.aws_ami.amazon_linux_2023.id
   instance_type = "t2.micro"
 
   network_interfaces {
-    security_groups = [aws_security_group.web_sg.id]
+    associate_public_ip_address = true #
+    security_groups             = [aws_security_group.web_sg.id]
   }
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
               dnf install -y httpd
               systemctl start httpd
+              systemctl enable httpd
               echo '<h1>Week 2 Capstone: Success</h1>' > /var/www/html/index.html
               EOF
   )
@@ -109,7 +112,7 @@ resource "aws_autoscaling_group" "web" {
   max_size            = 3
   min_size            = 1
   target_group_arns   = [aws_lb_target_group.web.arn]
-  vpc_zone_identifier = module.vpc.private_subnet_ids
+  vpc_zone_identifier = module.vpc.public_subnet_ids
 
   launch_template {
     id      = aws_launch_template.web.id
