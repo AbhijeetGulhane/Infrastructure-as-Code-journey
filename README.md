@@ -1,168 +1,96 @@
-# Infrastructure-as-Code-journey
+# 🚀 Infrastructure-as-Code Journey (SRE Roadmap)
 
-This repository documents my journey and technical progression. It contains production-grade Terraform configurations, architectural patterns, and automation workflows.
+[![Terraform](https://img.shields.io/badge/Terraform-1.10+-623CE4?logo=terraform)](https://www.terraform.io/)
+[![AWS](https://img.shields.io/badge/AWS-Free--Tier-orange?logo=amazon-aws)](https://aws.amazon.com/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 🚀 Project Overview
-This project demonstrates modern Infrastructure as Code (IaC) principles using **Terraform** and **AWS**. The goal is to move away from manual "Click-Ops" toward a fully automated, version-controlled infrastructure.
+This repository documents my journey and technical progression in Site Reliability Engineering. It contains production-grade Terraform configurations, architectural patterns, and automation workflows.
 
-## 🛠️ Tech Stack
-- **Cloud Provider:** AWS (Amazon Web Services)
-- **IaC Tool:** Terraform (HCL)
-- **Version Control:** Git & GitHub
-- **Concepts:** State Management, Resource Lifecycles, and Variable Injection.
+## 🏗️ Architecture: The Resilient Web Cluster
+The current state of this infrastructure is a **Multi-AZ, Self-Healing, and Secret-Aware** web cluster designed to survive data center failures and follow Zero-Trust security principles.
+
+
+
+### **Core Capabilities:**
+- **Zero-Trust Identity:** EC2 instances use IAM Roles (Instance Profiles) to fetch secrets dynamically—no hardcoded keys.
+- **High Availability:** Traffic is balanced across multiple Availability Zones using an Application Load Balancer (ALB).
+- **Self-Healing:** Auto Scaling Groups (ASG) monitor instance health and automatically replace failed nodes.
+- **Observability:** Integrated CloudWatch Dashboards and SNS alerting for real-time monitoring of fleet health.
+
+---
+
+## 🏆 Featured Projects
+
+### **Project 1: Multi-Environment Portfolio Engine**
+A production-grade framework that deploys isolated static websites across multiple environments using a single codebase.
+* **Core Feature:** Environment isolation using **Terraform Workspaces** (`dev` vs `prod`).
+* **Backend:** Remote state managed via S3 with DynamoDB state locking.
+* **Infrastructure:** Custom S3 Website modules with automated policy injection.
+* **Results:**
+    * [Dev URL](http://abhijeet-portfolio-dev-2025.s3-website-us-east-1.amazonaws.com)
+    * [Prod URL](http://abhijeet-portfolio-prod-2025.s3-website-us-east-1.amazonaws.com)
+
+### **Project 2: The Security-Hardened Fleet (Week 4 Capstone)**
+The culmination of the networking and security phases, moving from public-facing instances to a private, secret-aware infrastructure.
+* **Secrets Management:** 100% removal of hardcoded credentials using **AWS Secrets Manager**.
+* **Identity & Access:** Implemented IAM Roles and Policies to grant "Least Privilege" access to cloud resources.
+* **Network Isolation:** Deployment of servers in private subnets, accessible only through a hardened Load Balancer.
+
+---
+
+## 📝 Progression Log
+
+### **Week 4: Security & Secret Management**
+**Focus:** "Infrastructure Hardening"
+- **IAM Instance Profiles:** Eliminated programmatic keys by assigning digital identities to EC2.
+- **AWS Secrets Manager:** Implemented secure injection of API Keys and environment variables.
+- **Bootstrap Automation:** Enhanced `user_data` to fetch secrets at runtime using the AWS CLI and `jq`.
+- **Modular Refactoring:** Organized the repo by moving historical logic to `/archives` to maintain state continuity.
+
+### **Week 3: Observability & Resilience**
+**Focus:** "Making Infrastructure Visible"
+- **Load Balancing:** Implemented an ALB to distribute traffic and handle SSL termination points.
+- **Health Checks:** Configured aggressive thresholds to ensure zero-downtime during fleet rotations.
+- **CloudWatch Dashboards:** Built a centralized performance view for monitoring fleet-wide CPU utilization.
+- **SNS Alerts:** Automated email notifications for infrastructure anomalies.
+
+### **Week 2: Networking & Connectivity**
+**Focus:** "The Cloud Skeleton"
+- **VPC Design:** Built a custom VPC with dynamic subnetting across multiple AZs.
+- **Cost Engineering:** Replaced expensive NAT Gateways with a custom **NAT Instance** (Amazon Linux 2023) to stay within the AWS Free Tier.
+- **Security Group Chaining:** Implemented "Least Privilege" where web servers only accept traffic from the ALB.
+
+### **Week 1: Foundations & State**
+**Focus:** "The IaC Lifecycle"
+- **State Management:** Migrated local state to S3 with DynamoDB locking.
+- **Modules:** Refactored S3 logic into a reusable child module.
+- **Workspaces:** Mastered environment switching for `dev` and `prod` deployments.
+
+---
 
 ## 📁 Repository Structure
-- `provider.tf`: Defines the AWS provider and version constraints.
-- `variables.tf`: Contains input variables to make the infrastructure reusable.
-- `main.tf`: The core logic for AWS resources (e.g., S3 Buckets, IAM).
-- `.gitignore`: Ensures sensitive state files and secrets are never committed.
+```text
+Infrastructure-as-Code-journey/
+├── main.tf                  # Root: Module orchestration
+├── variables.tf             # Root: Global inputs
+├── outputs.tf               # Root: High-level endpoints
+├── terraform.tfvars         # Root: Environment values
+├── modules/
+│   ├── networking/          # VPC, ALB, ASG, IAM, & Secrets
+│   └── monitoring/          # CloudWatch Alarms & SNS
+└── archives/                # Historical milestones (Week 1-3)
+```
 
-## ⚙️ How to run
-1. Clone the repo: `git clone <your-repo-url>`
-2. Initialize: `terraform init`
-3. Preview changes: `terraform plan`
-4. Deploy: `terraform apply`
-
-
-# 📝 Progression Log
-
-### Day 1: Terraform Fundamentals
-- Mastered the Core Workflow: `init`, `plan`, `apply`, `destroy`.
-- Explored the **Terraform State File** (`.tfstate`) and its importance as the Source of Truth.
-- Learned about **Immutability** and the `-/+` (Replace) resource lifecycle.
-
-### Day 2: The Cloud Handshake & Variables
-- Configured AWS CLI with IAM User for secure programmatic access.
-- Implemented **Input Variables** to decouple configuration from code.
-- Deployed a globally unique **S3 Bucket** using dynamic variable inputs.
+## ⚙️ How to Deploy
+**Initialize**: ```bash terraform init -reconfigure
+**Format & Validate**: ```bash terraform fmt -recursive && terraform validate
+**Plan**: ```bash terraform plan -out=tfplan
+**Deploy**: ```bash terraform apply "tfplan"
+**Cleanup**: ```bash terraform destroy -auto-approve
 
 
-### Day 3: Dynamic Infrastructure & Efficiency
-
-#### **Infrastructure-as-Code (Terraform)**
-On Day 3, I shifted from static configurations to **Dynamic Infrastructure**. The focus was on making code "aware" of its environment.
-- **Data Sources:** Implemented `data` blocks to query the AWS API for real-time information (Account IDs and Availability Zones). This removes hardcoded dependencies and makes the code portable across different AWS accounts.
-- **Outputs:** Defined explicit `output` values to surface critical resource information (like S3 Website Endpoints) directly to the CLI, facilitating automation and visibility.
-- **Implicit Dependencies:** Leveraged Terraform's dependency graph to ensure resources (like Bucket Website Configurations) are created in the correct logical order.
-
-### Day 4: State Management & Safety
-- **Remote Backend:** Successfully migrated local state to AWS S3 for durability.
-- **State Locking:** Implemented native S3 lockfile support to prevent concurrent execution conflicts.
-- **Bootstrap Process:** Navigated the "Chicken-and-Egg" problem using a two-stage initialization.
-
-
-### Day 5: Modularization & State Refactoring
-- **Modules:** Refactored S3 Website logic into a reusable child module located in `./modules/s3-website`.
-- **State Management:** Mastered `terraform state list` and `terraform state mv` to ensure zero-downtime refactoring.
-- **Algorithms:** Implemented an iterative $O(n)$ time and $O(1)$ space solution for Reversing a Linked List.
-
-### Project 1: Multi-Environment Portfolio Engine
-
-#### Description
-A production-grade Terraform framework that deploys isolated static websites across multiple environments using a single codebase.
-
-#### Technical Stack
-- **Terraform Workspaces:** Environment isolation for `dev` and `prod`.
-- **Remote State:** Managed via S3 with DynamoDB locking.
-- **Custom Modules:** Reusable S3 website component with automated policy injection.
-
-#### Results
-- **Dev URL:** http://abhijeet-portfolio-dev-2025.s3-website-us-east-1.amazonaws.com
-- **Prod URL:** http://abhijeet-portfolio-prod-2025.s3-website-us-east-1.amazonaws.com
-
-
-# Infrastructure-as-Code Journey: Week 2 - Networking
-
-## 📌 Project Overview
-Building upon the state management foundations from Week 1, Week 2 focuses on creating the **Network Skeleton** of a cloud environment. This project implements a highly scalable, modular Virtual Private Cloud (VPC) on AWS using Terraform.
-
-
-
-## 🏗️ Architecture: The VPC Skeleton
-This module automates the deployment of a secure networking environment, featuring:
-- **Dynamic Subnetting:** Utilizes `for_each` loops to map subnets across multiple Availability Zones (AZs) for High Availability.
-- **Internet Connectivity:** Automated provisioning of an Internet Gateway (IGW) and Route Tables.
-- **CIDR Management:** Structured IP addressing using `/16` for the VPC and `/24` for subnets.
-
-## 🚀 Key SRE Concepts Implemented
-- **DRY (Don't Repeat Yourself):** Replaced hardcoded resource blocks with a single dynamic module.
-- **Scalability:** The infrastructure can scale from 1 to 50 subnets by simply updating a Map variable—no code changes required.
-- **Modular Inputs/Outputs:** Established a clear "contract" between the root configuration and the networking module using structured variables and outputs.
-
-## 🛠️ Infrastructure Breakdown
-| Resource | Purpose |
-| :--- | :--- |
-| `aws_vpc` | Isolated network container. |
-| `aws_internet_gateway` | The entry/exit point for public traffic. |
-| `aws_subnet` | Segmented IP ranges (multi-AZ). |
-| `aws_route_table` | The "GPS" directing traffic to the Internet Gateway. |
-
-## 💻 Deployment Commands
-1. **Initialize:** `terraform init`
-2. **Workspace Management:** `terraform workspace select dev`
-3. **Deploy:** `terraform apply -auto-approve`
-4. **Cleanup:** `terraform destroy -auto-approve`
-
-## 🧠 Lessons Learned
-- **Zombie Code Management:** Learned to identify and remove "leftover" variables and outputs from previous modules to prevent Terraform Plan errors.
-- **Variable Mapping:** Mastered the use of `map(object({}))` to pass complex data structures into modules.
-
-
-## Phase 2: Modular Networking & Cost Optimization
-
-### Technical Highlights
-- **Modular Design:** Decoupled networking logic into a reusable child module.
-- **Network Isolation:** Built a multi-tier VPC with strictly private subnets for enhanced security.
-- **Cost Engineering:** Replaced the standard AWS NAT Gateway (~$32/mo) with a custom-configured **NAT Instance** using Amazon Linux 2023, keeping the project within the **AWS Free Tier**.
-- **IaC Best Practices:** Implemented automated formatting and rigorous `terraform validate` workflows to handle complex variable scoping.
-
-
-## Phase 3 & 4: High Availability & Elasticity 📈
-
-In this stage, I transitioned from a static network to an automated, self-healing fleet.
-
-### 🏗 Architecture
-- **Application Load Balancer (ALB):** Acts as the entry point for all HTTP traffic, distributing load across multiple availability zones.
-- **Auto Scaling Group (ASG):** Manages a fleet of EC2 instances in private subnets. It ensures a minimum of 2 instances are always healthy.
-- **Security Group Chaining:** Implemented a "Least Privilege" model where web servers only accept traffic if it originates from the ALB's security group.
-
-### 🧠 SRE Skills Mastered
-- **Self-Healing:** Configured ASG health checks to automatically replace failed instances.
-- **Private Fleet Management:** Successfully routed traffic to instances with no public IPs using the ALB as a bridge.
-- **Infrastructure Testing:** Created a bash-based health check script to verify load balancer responsiveness.
-
-
-
-### 🚀 Infrastructure-as-Code Journey: Week 2 Capstone
-#### Project: The Resilient Web Cluster
-
-This project marks the completion of Phase 2 of my SRE roadmap. I have moved beyond basic instance deployment into building a **High-Availability (HA)**, self-healing architecture that follows industry best practices for security and scalability.
-
-
-
-#### 🏗️ Architecture Design
-The infrastructure is designed to survive the failure of an entire AWS Data Center (Availability Zone).
-
-* **VPC & Networking:** A custom VPC spanning two Availability Zones (AZs). It utilizes a 2-tier subnet strategy to isolate the application layer from the public internet.
-* **Application Load Balancer (ALB):** Serves as the single point of entry, distributing traffic across the fleet and performing health checks.
-* **Auto Scaling Group (ASG):** Maintains a "Desired Capacity" of 2 instances. If an instance fails a health check or is terminated, the ASG automatically provisions a replacement from a Launch Template.
-* **Security Chaining:** Web servers are located in **Private Subnets** with no public IP addresses. They only accept traffic on Port 80 if it originates from the ALB's Security Group.
-
-#### 🛠️ Tech Stack
-* **Cloud Provider:** AWS
-* **IaC Tool:** Terraform (Modularized)
-* **Web Server:** Apache (HTTPD) on Amazon Linux 2023
-* **Scripting:** Bash (for automated chaos testing)
-
-#### 🧠 SRE Skills Demonstrated
-- **Modular Terraform:** Using child modules to create reusable networking components.
-- **Fault Tolerance:** Designing for Multi-AZ resilience.
-- **Least Privilege Security:** Using Security Group references instead of wide-open CIDR blocks.
-- **Automated Recovery:** Leveraging ASG self-healing policies.
-
-#### 🚀 How to Deploy
-
-1. **Initialize & Apply:**
-   ```bash
-   terraform init
-   terraform apply -auto-approve
+## 🧠 SRE Skills Demonstrated
+**Infrastructure as Code**: Advanced modularization and variable inheritance patterns.
+**Security**: Secrets management, IAM Least Privilege, and Security Group hardening.
+**Cost Optimization**: Engineering around cloud provider costs (NAT Instance vs NAT Gateway).
+**Automation**: Bash bootstrapping for application-level configuration and runtime security.
